@@ -57,17 +57,50 @@ case object Human    extends Race
 // flat weakness with or against
 // change age (younger or older) with synergies
 
-case class Breakdown(age: Map[Age, Double], profession: Map[Profession, Double], race: Map[Race, Double])
+case class Breakdown(count: Int, age: Map[Age, Double], profession: Map[Profession, Double], race: Map[Race, Double]) {
+  def exclude(card: Card): Breakdown = {
+    val newCount = count - 1
+    val newAgeCount: Int = Math.round(age.getOrElse(card.age, 0d) * count - 1).toInt
+    val ageUpdated: Map[Age, Double] = if (newAgeCount > 0) {
+      age.mapValues(_ * count / newCount) + (card.age -> newAgeCount / newCount.toDouble)
+    } else {
+      age.mapValues(_ * count / newCount) - card.age
+    }
+    val profUpdated: Map[Profession, Double] = card.profession match {
+      case Some(profVal) =>
+        val newProfCount: Int = Math.round(profession.getOrElse(profVal, 0d) * count - 1).toInt
+        if (newProfCount > 0) {
+          profession.mapValues(_ * count / newCount) + (profVal -> newProfCount / newCount.toDouble)
+        } else {
+          profession.mapValues(_ * count / newCount) - profVal
+        }
+      case None =>
+    }
+    val raceUpdated: Map[Race, Double] = card.race match {
+      case Some(raceVal) =>
+        val newRaceCount: Int = Math.round(race.getOrElse(raceVal, 0d) * count - 1).toInt
+        if (newRaceCount > 0) {
+          race.mapValues(_ * count / newCount) + (raceVal -> newRaceCount / newCount.toDouble)
+        } else {
+          race.mapValues(_ * count / newCount) - raceVal
+        }
+      case None =>
+    }
+    Breakdown(newCount, ageUpdated, profUpdated, raceUpdated)
+  }
+}
 
 object Breakdown {
   def apply(deck: Set[Card]): Breakdown = {
-    val (ageCount, profCount, raceCount): (Map[Age, Int], Map[Profession, Double], Map[Race, Double]) =
-      deck.foldLeft((Map[Age, Int](), Map[Profession, Double](), Map[Race, Double]())) {
-        case ((age: Map[Age, Int], prof: Map[Profession, Double], race: Map[Race, Double]), card: Card) =>
-          val ageUpdated: Map[Age, Int] = age + (card.age -> age.getOrElse(card.age, 0))
-          (ageUpdated, prof, race)
+    val (ageCount, profCount, raceCount): (Map[Age, Int], Map[Profession, Int], Map[Race, Int]) =
+      deck.foldLeft((Map[Age, Int](), Map[Profession, Int](), Map[Race, Int]())) {
+        case ((age: Map[Age, Int], prof: Map[Profession, Int], race: Map[Race, Int]), card: Card) =>
+          val ageUpdated: Map[Age, Int] = age + (card.age -> (1 + age.getOrElse(card.age, 0)))
+          val profUpdated: Map[Profession, Int] = prof ++ card.profession.map(p => (p -> (1 + prof.getOrElse(p, 0)))).toMap
+          val raceUpdated: Map[Race, Int] = race ++ card.race.map(r => (r -> (1 + race.getOrElse(r, 0)))).toMap
+          (ageUpdated, profUpdated, raceUpdated)
       }
-    Breakdown(ageCount.mapValues(_ / deck.size.toDouble),
+    Breakdown(deck.size, ageCount.mapValues(_ / deck.size.toDouble),
               profCount.mapValues(_ / deck.size.toDouble),
               raceCount.mapValues(_ / deck.size.toDouble))
   }
