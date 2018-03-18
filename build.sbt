@@ -1,6 +1,6 @@
 lazy val root = (project in file("."))
   .settings(
-    name         := "Scala.js React boilerplate",
+    name         := "Deck Builder",
     scalaVersion := "2.12.4",
     version      := "0.0.2"
   )

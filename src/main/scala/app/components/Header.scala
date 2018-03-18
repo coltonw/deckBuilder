@@ -9,7 +9,7 @@ object Header {
     ScalaComponent.builder[Unit]("Header")
       .renderStatic(<.div(
         app.Styles.appHeader,
-        <.h2("Build a great deck")
+        <.h2("Deck Builder")
       ))
       .build
   def apply() = component()

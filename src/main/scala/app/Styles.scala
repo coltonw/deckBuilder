@@ -13,7 +13,7 @@ object Styles extends StyleSheet.Inline {
 
   val appHeader = style(
     backgroundColor.rgb(34, 34, 34),
-    height(150 px),
+    height(50 px),
     padding(20 px),
     color.white
   )
@@ -24,6 +24,12 @@ object Styles extends StyleSheet.Inline {
 
   val appIntro = style(
     fontSize.large
+  )
+
+  val appCard = style(
+    fontSize.large,
+    border(solid, purple, 2 px),
+    backgroundColor.lavender
   )
 
   val app = style(

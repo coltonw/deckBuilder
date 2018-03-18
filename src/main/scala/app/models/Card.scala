@@ -75,6 +75,7 @@ case class Breakdown(count: Int, age: Map[Age, Double], profession: Map[Professi
           profession.mapValues(_ * count / newCount) - profVal
         }
       case None =>
+        profession.mapValues(_ * count / newCount)
     }
     val raceUpdated: Map[Race, Double] = card.race match {
       case Some(raceVal) =>
@@ -85,6 +86,7 @@ case class Breakdown(count: Int, age: Map[Age, Double], profession: Map[Professi
           race.mapValues(_ * count / newCount) - raceVal
         }
       case None =>
+        race.mapValues(_ * count / newCount)
     }
     Breakdown(newCount, ageUpdated, profUpdated, raceUpdated)
   }
@@ -121,8 +123,8 @@ case class Card(basePower: Double = 5.0,
                 age: Age = Young,
                 profession: Option[Profession] = None,
                 race: Option[Race] = None,
-                synergies: Set[Synergy],
-                counters: Set[Synergy]) {
+                synergies: Set[Synergy] = Set.empty,
+                counters: Set[Synergy] = Set.empty) {
   def power: (Breakdown, Breakdown) => Double =
     (allyBreakdown: Breakdown, enemyBreakdown: Breakdown) => {
       basePower +
