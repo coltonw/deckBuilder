@@ -26,6 +26,18 @@ object Styles extends StyleSheet.Inline {
     fontSize.large
   )
 
+  val appMatch = style(
+    display.flex,
+    flexDirection.row,
+    justifyContent.spaceBetween,
+    alignItems.flexStart
+  )
+
+  val appDeck = style(
+    height(100 pc),
+    overflowY.auto
+  )
+
   val appCard = style(
     fontSize.large,
     border(solid, purple, 2 px),
