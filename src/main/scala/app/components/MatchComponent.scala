@@ -11,12 +11,19 @@ object MatchComponent {
     ScalaComponent
       .builder[Match]("Match")
       .render_P(matchVal => {
-        val winDiv = if (matchVal.win) { Some(<.div("YOU WIN!!!")) } else { None }
+        val winDiv = if (matchVal.win) { <.div("YOU WIN!!!") } else { <.div("YOU SUCK!!!") }
         <.div(
           app.Styles.appMatch,
-          DeckComponent(matchVal.deck),
-          winDiv,
-          DeckComponent(matchVal.enemyDeck)
+          DeckComponent(matchVal.myFinalDeck),
+          <.div(
+            winDiv,
+            <.code(matchVal.myBreakdown.profession.toString),
+            <.br,
+            <.code(matchVal.enemyBreakdown.profession.toString),
+            <.div("My score:", matchVal.myScore),
+            <.div("Enemy Score:", matchVal.enemyScore)
+          ),
+          DeckComponent(matchVal.enemyFinalDeck)
         )
       })
       .build

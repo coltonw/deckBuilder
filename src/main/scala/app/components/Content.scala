@@ -6,12 +6,13 @@ import scalacss.ScalaCssReact._
 import app.models._
 
 object Content {
-  val matchVal = Match(Set(Card(4d)), Set(Card(3d)))
+  val deckSize = 20
+  val matchVal = Match(1.to(deckSize).map(_ => Card.random).toSet, 1.to(deckSize).map(_ => Card.random).toSet)
   val component =
     ScalaComponent
       .builder[Unit]("Content")
       .renderStatic(
-        <.div(MatchComponent(matchVal))
+          MatchComponent(matchVal)
       )
       .build
   def apply() = component()

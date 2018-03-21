@@ -16,8 +16,9 @@ object CardComponent {
             app.Styles.appCard,
             <.div(card.basePower.toString),
             <.div(card.age.toString),
-            <.div(card.profession.toString),
-            <.div(card.race.toString),
+            card.profession.map(p => <.div(p.toString)),
+            card.race.map(r => <.div(r.toString)),
+            card.score.map(s => <.div(s)),
             <.code(card.toString)
         )
       )

@@ -6,9 +6,7 @@ object Styles extends StyleSheet.Inline {
   import dsl._
 
   val mainFont = fontFace("mainFont")(
-    _.src("local(Tahoma)")
-      .fontStretch.ultraCondensed
-      .fontWeight._200
+    _.src("local(Tahoma)").fontStretch.ultraCondensed.fontWeight._200
   )
 
   val appHeader = style(
@@ -18,24 +16,19 @@ object Styles extends StyleSheet.Inline {
     color.white
   )
 
-  val appLogo = style(
-    height(80 px)
-  )
-
-  val appIntro = style(
-    fontSize.large
-  )
-
   val appMatch = style(
     display.flex,
     flexDirection.row,
     justifyContent.spaceBetween,
-    alignItems.flexStart
+    alignItems.flexStart,
+    height(100 %%)
   )
 
   val appDeck = style(
-    height(100 pc),
-    overflowY.auto
+    height(100 %%),
+    overflowY.auto,
+    flexGrow(1),
+    flexShrink(1)
   )
 
   val appCard = style(
@@ -45,12 +38,21 @@ object Styles extends StyleSheet.Inline {
   )
 
   val app = style(
+    display.flex,
+    flexDirection.column,
     textAlign.center,
-    fontFamily(mainFont)
+    fontFamily(mainFont),
+    justifyContent.flexStart,
+    height(100 %%)
   )
 
   val body = style(
     margin(0 px),
-    padding(0 px)
+    padding(0 px),
+    height(100 %%),
+    overflow.hidden
   )
+
+  val html = style(body)
+  val root = style(body)
 }

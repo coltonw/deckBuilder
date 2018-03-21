@@ -3,14 +3,18 @@ package app.models
 case class Match(deck: Set[Card], enemyDeck: Set[Card]) {
   val myBreakdown    = Breakdown(deck)
   val enemyBreakdown = Breakdown(enemyDeck)
-  val myScore        = Match.score(deck, myBreakdown, enemyBreakdown)
-  val enemyScore     = Match.score(enemyDeck, enemyBreakdown, myBreakdown)
+  val myFinalDeck    = Match.scoreDeck(deck, myBreakdown, enemyBreakdown)
+  val enemyFinalDeck = Match.scoreDeck(enemyDeck, enemyBreakdown, myBreakdown)
+  val myScore        = Match.score(myFinalDeck)
+  val enemyScore     = Match.score(enemyFinalDeck)
   val win            = myScore > enemyScore
 }
 
 object Match {
-  def score(myDeck: Set[Card], myBreakdown: Breakdown, enemyBreakdown: Breakdown): Double = myDeck.foldLeft(0d) {
-    (score, card) =>
-      score + card.power(myBreakdown.exclude(card), enemyBreakdown)
+  def scoreDeck(myDeck: Set[Card], myBreakdown: Breakdown, enemyBreakdown: Breakdown): Set[Card] =
+    myDeck.map(c => c.copy(score = Some(c.power(myBreakdown.exclude(c), enemyBreakdown))))
+
+  def score(myDeck: Set[Card]): Double = myDeck.foldLeft(0d) { (score, card) =>
+    score + card.score.getOrElse(0.0)
   }
 }
