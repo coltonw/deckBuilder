@@ -14,7 +14,7 @@ object DeckComponent {
         deck =>
           <.div(
             app.Styles.appDeck,
-            deck.map(c => CardComponent(c)).toVdomArray
+            Card.sort(deck).map(c => CardComponent(c)).toVdomArray
           )
       )
       .build

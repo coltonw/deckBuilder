@@ -143,6 +143,7 @@ case class Card(basePower: Double = 5.0,
                 synergies: Set[Synergy] = Set.empty,
                 counters: Set[Synergy] = Set.empty,
                 score: Option[Double] = None) {
+  val key = f"${profession}.${basePower.toLong}%03d.${hashCode()}"
   def power: (Breakdown, Breakdown) => Double =
     (allyBreakdown: Breakdown, enemyBreakdown: Breakdown) => {
       val professionMulti = profession match {
@@ -200,5 +201,9 @@ object Card {
       profession = profession,
       race = race
     )
+  }
+
+  def sort(deck: Set[Card]): Vector[Card] = {
+    deck.toVector.sortBy(c => c.key)
   }
 }

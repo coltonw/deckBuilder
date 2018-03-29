@@ -33,8 +33,38 @@ object Styles extends StyleSheet.Inline {
 
   val appCard = style(
     fontSize.large,
-    border(solid, purple, 2 px),
+    border(solid, gray, 2 px),
+    backgroundColor.lightgray
+  )
+
+  val appCardUnselected = style(
+    appCard,
+    opacity(0.6)
+  )
+
+  val appAlchemists = style(
+    borderColor.yellow,
+    backgroundColor.lightyellow
+  )
+
+  val appTechs = style(
+    borderColor.steelblue,
+    backgroundColor.lightsteelblue
+  )
+
+  val appConjurors = style(
+    borderColor.purple,
     backgroundColor.lavender
+  )
+
+  val appProphets = style(
+    borderColor.red,
+    backgroundColor.pink
+  )
+
+  val appWoodsmen = style(
+    borderColor.green,
+    backgroundColor.lightgreen
   )
 
   val app = style(

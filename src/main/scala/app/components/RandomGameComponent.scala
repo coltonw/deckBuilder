@@ -10,17 +10,34 @@ object RandomGameComponent {
   case class State(chosenCards: Set[Card])
 
   class Backend($ : BackendScope[RandomGame, State]) {
-    def chooseCard(card: Card): Callback = $.modState { state: State => State(state.chosenCards + card) }
+    def chooseCard(card: Card): Callback = $.modState { state: State =>
+      State(state.chosenCards + card)
+    }
+    def removeCard(card: Card): Callback = $.modState { state: State =>
+      State(state.chosenCards - card)
+    }
 
-    def render(game: RandomGame, s: State): VdomNode = {
+    def render(p: RandomGame, s: State): VdomNode = {
+      val matchVal: Option[Match] = if (s.chosenCards.size == p.deckSize) {
+        Some(Match(s.chosenCards, p.enemy))
+      } else {
+        None
+      }
+      val enemyDeck = matchVal.map(m => DeckComponent(m.enemyFinalDeck)) getOrElse DeckComponent(p.enemy)
       <.div(
         app.Styles.appMatch,
         <.div(
           app.Styles.appDeck,
-          game.cardPool.map(c => CardComponent(c)).toVdomArray
+          Card
+            .sort(p.cardPool)
+            .map(c => CardComponent(CardComponent.Props(c, true, chooseCard, removeCard)))
+            .toVdomArray
         ),
-        Some(ResultsComponent(Match(s.chosenCards, game.enemy))).filter(_ => s.chosenCards.size == game.deckSize),
-        DeckComponent(game.enemy)
+        matchVal.map(m => ResultsComponent(m)),
+        Some(<.div(
+          s"${p.deckSize - s.chosenCards.size} cards left to choose"
+        )).filter(_ => matchVal.isEmpty),
+        enemyDeck
       )
     }
   }
