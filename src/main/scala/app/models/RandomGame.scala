@@ -7,13 +7,13 @@ case class RandomGame(deckSize: Int) {
     Card.random
   }).toSet
 
-  private val possibleEnemies: Seq[Set[Card]] = for (_ <- 1 to 20) yield { Random.shuffle(cardPool.toVector).take(deckSize).toSet }
-  val enemy: Set[Card] = possibleEnemies.reduceLeft[Set[Card]] {
-    case (champ: Set[Card], contender: Set[Card]) =>
-      if (Match(contender, champ).win) {
-        contender
-      } else {
-        champ
-      }
-  }
+  val enemy: Set[Card] =
+    (for (_ <- 1 to 500) yield { Random.shuffle(cardPool.toVector).take(deckSize).toSet }).reduceLeft[Set[Card]] {
+      case (champ: Set[Card], contender: Set[Card]) =>
+        if (Match(contender, champ).win) {
+          contender
+        } else {
+          champ
+        }
+    }
 }

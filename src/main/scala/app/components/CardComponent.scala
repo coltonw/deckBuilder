@@ -32,8 +32,8 @@ object CardComponent {
       val fullStyle =
         if (p.card.profession.contains(Alchemists)) {
           baseStyle + app.Styles.appAlchemists
-        } else if (p.card.profession.contains(Techs)) {
-          baseStyle + app.Styles.appTechs
+        } else if (p.card.profession.contains(BattleTechs)) {
+          baseStyle + app.Styles.appBattleTechs
         } else if (p.card.profession.contains(Conjurors)) {
           baseStyle + app.Styles.appConjurors
         } else if (p.card.profession.contains(Prophets)) {

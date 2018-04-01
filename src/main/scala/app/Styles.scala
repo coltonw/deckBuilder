@@ -47,7 +47,7 @@ object Styles extends StyleSheet.Inline {
     backgroundColor.lightyellow
   )
 
-  val appTechs = style(
+  val appBattleTechs = style(
     borderColor.steelblue,
     backgroundColor.lightsteelblue
   )

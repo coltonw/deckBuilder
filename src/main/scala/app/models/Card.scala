@@ -37,7 +37,7 @@ object Age {
 }
 
 /**
- * Alchemists < Techs < Conjurors < Prophets < Woodsmen < Alchemists
+ * Alchemists < BattleTechs < Conjurors < Prophets < Woodsmen < Alchemists
  * Professions have one other they are strong against (the two to the left with looping)
  * Could have multiple professions etc count as both for all pruposes
  * if you are strong against something you get double strength reduced to the ratio of opponents cards you are strong against
@@ -49,11 +49,11 @@ sealed trait Profession {
 case object Alchemists extends Profession {
   val beats = Woodsmen
 }
-case object Techs extends Profession {
+case object BattleTechs extends Profession {
   val beats = Alchemists
 }
 case object Conjurors extends Profession {
-  val beats = Techs
+  val beats = BattleTechs
 }
 case object Prophets extends Profession {
   val beats = Conjurors
@@ -195,7 +195,7 @@ object Card {
       Ancient -> 0
     }
     val profession = randomOption[Profession](
-      Vector(Alchemists, Techs, Conjurors, Prophets, Woodsmen),
+      Vector(Alchemists, BattleTechs, Conjurors, Prophets, Woodsmen),
       0.1
     )
     val race = randomOption[Race](
