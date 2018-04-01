@@ -13,9 +13,9 @@ object MatchComponent {
       .render_P(matchVal => {
         <.div(
           app.Styles.appMatch,
-          DeckComponent(matchVal.myFinalDeck),
+          DeckComponent(matchVal.myFinalDeck, matchVal.myUnusedCards),
           ResultsComponent(matchVal),
-          DeckComponent(matchVal.enemyFinalDeck)
+          DeckComponent(matchVal.enemyFinalDeck, matchVal.enemyUnusedCards)
         )
       })
       .build

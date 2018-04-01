@@ -7,17 +7,19 @@ import japgolly.scalajs.react.vdom.html_<^.{<, _}
 import scalacss.ScalaCssReact._
 
 object DeckComponent {
+  case class Props(main: Set[Card], unused: Set[Card])
   val component =
     ScalaComponent
-      .builder[Set[Card]]("Deck")
+      .builder[Props]("Deck")
       .render_P(
-        deck =>
+        p =>
           <.div(
             app.Styles.appDeck,
-            Card.sort(deck).map(c => CardComponent(c)).toVdomArray
+            Card.sort(p.main).map(c => CardComponent(c)).toVdomArray,
+            Card.sort(p.unused).map(c => CardComponent(c, desaturate = true)).toVdomArray,
           )
       )
       .build
 
-  def apply(deck: Set[Card]) = component(deck)
+  def apply(deck: Set[Card], unusedCards: Set[Card] = Set.empty) = component(Props(deck, unusedCards))
 }

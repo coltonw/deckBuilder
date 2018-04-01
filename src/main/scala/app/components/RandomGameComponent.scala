@@ -23,7 +23,9 @@ object RandomGameComponent {
       } else {
         None
       }
-      val enemyDeck = matchVal.map(m => DeckComponent(m.enemyFinalDeck)) getOrElse DeckComponent(p.enemy)
+      val enemyDeck = matchVal.map(m => DeckComponent(m.enemyFinalDeck, m.enemyUnusedCards)) getOrElse DeckComponent(
+        p.enemy
+      )
       <.div(
         app.Styles.appMatch,
         <.div(
@@ -34,9 +36,11 @@ object RandomGameComponent {
             .toVdomArray
         ),
         matchVal.map(m => ResultsComponent(m)),
-        Some(<.div(
-          s"${p.deckSize - s.chosenCards.size} cards left to choose"
-        )).filter(_ => matchVal.isEmpty),
+        Some(
+          <.div(
+            s"${p.deckSize - s.chosenCards.size} cards left to choose"
+          )
+        ).filter(_ => matchVal.isEmpty),
         enemyDeck
       )
     }

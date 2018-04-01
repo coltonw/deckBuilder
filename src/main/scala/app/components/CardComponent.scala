@@ -3,19 +3,18 @@ package app.components
 import japgolly.scalajs.react.{Callback, _}
 import japgolly.scalajs.react.vdom.html_<^.{<, _}
 import app.models._
-import org.scalajs.dom
-import org.scalajs.dom.ext.KeyCode
 
 import scalacss.ScalaCssReact._
 import scalacss.internal.Compose
 
 object CardComponent {
   private implicit def compose = Compose.safe
-  private val noOp = (_: Card) => Callback {}
+  private val noOp             = (_: Card) => Callback {}
   case class Props(card: Card,
                    selectable: Boolean = false,
                    onSelect: Card => Callback = noOp,
-                   onUnselect: Card => Callback = noOp)
+                   onUnselect: Card => Callback = noOp,
+                   desaturate: Boolean = false)
 
   class Backend($ : BackendScope[Props, Boolean]) {
 
@@ -29,7 +28,7 @@ object CardComponent {
       }
 
     def render(p: Props, s: Boolean): VdomNode = {
-      val baseStyle = if (p.selectable && !s) app.Styles.appCardUnselected else app.Styles.appCard
+      val baseStyle = if ((p.selectable && !s) || p.desaturate) app.Styles.appCardUnselected else app.Styles.appCard
       val fullStyle =
         if (p.card.profession.contains(Alchemists)) {
           baseStyle + app.Styles.appAlchemists
@@ -53,8 +52,8 @@ object CardComponent {
         <.div(p.card.age.toString),
         p.card.profession.map(p => <.div(p.toString)),
         p.card.race.map(r => <.div(r.toString)),
-        p.card.score.map(s => <.div(s)),
-        <.code(p.card.toString)
+        p.card.score.map(s => <.div(f"$s%.1f")),
+        // <.code(p.card.toString)
       )
     }
   }
@@ -66,6 +65,6 @@ object CardComponent {
       .renderBackend[Backend]
       .build
 
-  def apply(card: Card)   = component(Props(card))
-  def apply(props: Props) = component(props)
+  def apply(card: Card, desaturate: Boolean = false) = component(Props(card, desaturate = desaturate))
+  def apply(props: Props)                            = component(props)
 }

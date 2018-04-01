@@ -14,11 +14,8 @@ object ResultsComponent {
         val winDiv = if (matchVal.win) { <.div("YOU WIN!!!") } else { <.div("YOU SUCK!!!") }
         <.div(
           winDiv,
-          <.code(matchVal.myBreakdown.profession.toString),
-          <.br,
-          <.code(matchVal.enemyBreakdown.profession.toString),
-          <.div("My score:", matchVal.myScore),
-          <.div("Enemy Score:", matchVal.enemyScore)
+          <.div(f"My score: ${matchVal.myScores.getOrElse(matchVal.finalAge, 0d)}%.1f"),
+          <.div(f"Enemy Score: ${matchVal.enemyScores.getOrElse(matchVal.finalAge, 0d)}%.1f")
         )
       })
       .build

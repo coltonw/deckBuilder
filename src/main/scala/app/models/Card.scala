@@ -9,22 +9,27 @@ import scala.util.Random
  */
 sealed trait Age {
   val phaseIndex: Int
+  def inPhase(c: Card): Boolean
 }
 
 case object Young extends Age {
   val phaseIndex = 0
+  def inPhase(c: Card): Boolean = c.age == Young
 }
 
 case object Adult extends Age {
   val phaseIndex = 1
+  def inPhase(c: Card): Boolean = c.age == Adult || Young.inPhase(c)
 }
 
 case object Old extends Age {
   val phaseIndex = 2
+  def inPhase(c: Card): Boolean = c.age == Old || Adult.inPhase(c)
 }
 
 case object Ancient extends Age {
   val phaseIndex = 3
+  def inPhase(c: Card): Boolean = c.age == Ancient || Old.inPhase(c)
 }
 
 object Age {
@@ -123,6 +128,8 @@ object Breakdown {
               profCount.mapValues(_ / deck.size.toDouble),
               raceCount.mapValues(_ / deck.size.toDouble))
   }
+
+  def empty: Breakdown = Breakdown(0, Map.empty, Map.empty, Map.empty)
 }
 
 // Synergies can be with allies or against enemies. Synergies against enemies are called "counters".
@@ -196,7 +203,7 @@ object Card {
     )
 
     Card(
-      basePower = rand.nextInt(6) + rand.nextInt(6) + 6 - agePower,
+      basePower = Math.max(rand.nextInt(6) + rand.nextInt(6) + 6 - agePower, 1),
       age = age,
       profession = profession,
       race = race
