@@ -48,7 +48,7 @@ object Match {
     score + card.score.getOrElse(0.0)
   }
 
-  def subMatch(subScore: Double, enemySubScore: Double, threshold: Double = 20d): Option[Result] = {
+  def subMatch(subScore: Double, enemySubScore: Double, threshold: Double = 25d): Option[Result] = {
     if (enemySubScore >= subScore + threshold) {
       Some(Loss)
     } else if (subScore >= enemySubScore + threshold) {

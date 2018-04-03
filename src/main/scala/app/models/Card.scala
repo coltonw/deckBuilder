@@ -1,5 +1,6 @@
 package app.models
 
+import scala.annotation.tailrec
 import scala.util.Random
 
 /**
@@ -9,26 +10,31 @@ import scala.util.Random
  */
 sealed trait Age {
   val phaseIndex: Int
+  val power: Int
   def inPhase(c: Card): Boolean
 }
 
 case object Young extends Age {
   val phaseIndex = 0
+  val power = 10
   def inPhase(c: Card): Boolean = c.age == Young
 }
 
 case object Adult extends Age {
   val phaseIndex = 1
+  val power = 6
   def inPhase(c: Card): Boolean = c.age == Adult || Young.inPhase(c)
 }
 
 case object Old extends Age {
   val phaseIndex = 2
+  val power = 3
   def inPhase(c: Card): Boolean = c.age == Old || Adult.inPhase(c)
 }
 
 case object Ancient extends Age {
   val phaseIndex = 3
+  val power = 0
   def inPhase(c: Card): Boolean = c.age == Ancient || Old.inPhase(c)
 }
 
@@ -37,7 +43,7 @@ object Age {
 }
 
 /**
- * Alchemists < BattleTechs < Conjurors < Prophets < Woodsmen < Alchemists
+ * Alchemist < BattleTech < Conjuror < Prophet < Woodsman < Alchemist
  * Professions have one other they are strong against (the two to the left with looping)
  * Could have multiple professions etc count as both for all pruposes
  * if you are strong against something you get double strength reduced to the ratio of opponents cards you are strong against
@@ -46,20 +52,20 @@ sealed trait Profession {
   val beats: Profession
 }
 
-case object Alchemists extends Profession {
-  val beats = Woodsmen
+case object Alchemist extends Profession {
+  val beats = Woodsman
 }
-case object BattleTechs extends Profession {
-  val beats = Alchemists
+case object BattleTech extends Profession {
+  val beats = Alchemist
 }
-case object Conjurors extends Profession {
-  val beats = BattleTechs
+case object Conjuror extends Profession {
+  val beats = BattleTech
 }
-case object Prophets extends Profession {
-  val beats = Conjurors
+case object Prophet extends Profession {
+  val beats = Conjuror
 }
-case object Woodsmen extends Profession {
-  val beats = Prophets
+case object Woodsman extends Profession {
+  val beats = Prophet
 }
 
 // Add races purely for synergy
@@ -118,9 +124,9 @@ object Breakdown {
         case ((age: Map[Age, Int], prof: Map[Profession, Int], race: Map[Race, Int]), card: Card) =>
           val ageUpdated: Map[Age, Int] = age + (card.age -> (1 + age.getOrElse(card.age, 0)))
           val profUpdated: Map[Profession, Int] = prof ++ card.profession
-            .map(p => (p -> (1 + prof.getOrElse(p, 0))))
+            .map(p => p -> (1 + prof.getOrElse(p, 0)))
             .toMap
-          val raceUpdated: Map[Race, Int] = race ++ card.race.map(r => (r -> (1 + race.getOrElse(r, 0)))).toMap
+          val raceUpdated: Map[Race, Int] = race ++ card.race.map(r => r -> (1 + race.getOrElse(r, 0))).toMap
           (ageUpdated, profUpdated, raceUpdated)
       }
     Breakdown(deck.size,
@@ -150,7 +156,7 @@ case class Card(basePower: Double = 5.0,
                 synergies: Set[Synergy] = Set.empty,
                 counters: Set[Synergy] = Set.empty,
                 score: Option[Double] = None) {
-  val key = f"${profession}.${basePower.toLong}%03d.${hashCode()}"
+  val key = f"$profession.${basePower.toLong}%03d.${hashCode()}"
   def power: (Breakdown, Breakdown) => Double =
     (allyBreakdown: Breakdown, enemyBreakdown: Breakdown) => {
       val professionMulti = profession match {
@@ -183,19 +189,21 @@ object Card {
       Some(list(i))
     }
   }
+
+
   def random: Card = {
     val randForAge = rand.nextDouble()
-    val (age, agePower) = if (randForAge < 0.3) {
-      Young -> 10
+    val age = if (randForAge < 0.3) {
+      Young
     } else if (randForAge < 0.7) {
-      Adult -> 6
+      Adult
     } else if (randForAge < 0.9) {
-      Old -> 3
+      Old
     } else {
-      Ancient -> 0
+      Ancient
     }
     val profession = randomOption[Profession](
-      Vector(Alchemists, BattleTechs, Conjurors, Prophets, Woodsmen),
+      Vector(Alchemist, BattleTech, Conjuror, Prophet, Woodsman),
       0.1
     )
     val race = randomOption[Race](
@@ -203,11 +211,65 @@ object Card {
     )
 
     Card(
-      basePower = Math.max(rand.nextInt(6) + rand.nextInt(6) + 6 - agePower, 1),
+      basePower = Math.max(rand.nextInt(6) + rand.nextInt(6) + 6 - age.power, 1),
       age = age,
       profession = profession,
       race = race
     )
+  }
+  val profs = Vector(Alchemist, BattleTech, Conjuror, Prophet, Woodsman)
+  val races = Vector(Human, Undead, Beastman)
+  val randomFactorSizes = Vector(profs.size + 1, Age.phases.size, races.size + 1)
+  def from(i: Int): Card = {
+    // change profession then age then race
+    // 0: Adult, Alchemist, none ; 1: Adult, BattleTech, none ...
+    val randomDouble = Random.nextDouble()
+    val bonusScore = if (randomDouble < 0.03) {
+      2
+    } else if (randomDouble < 0.15) {
+      1
+    } else {
+      0
+    }
+    val prof = if (i % (profs.size + 1) == profs.size) {
+      None
+    } else {
+      Some(profs(i % (profs.size + 1)))
+    }
+    val age = Age.phases(i / randomFactorSizes.take(1).product % Age.phases.size)
+
+    val race = if (i / randomFactorSizes.take(2).product == races.size) {
+      None
+    } else {
+      Some(races(i / randomFactorSizes.take(2).product % (races.size + 1)))
+    }
+    Card(12 + bonusScore - age.power, age, prof, race)
+  }
+
+  /**
+   * shuffle 1st third, then half of that group and next 6th, then half of that group and next 6th
+   * and so on and then do it again backwards
+   */
+  def chainShuffle[A](all: Vector[A]): Vector[A] = {
+    @tailrec
+    def chainOn(toShuffle: Vector[A], linkSize: Int, stable: Vector[A] = Vector.empty[A]): Vector[A] = {
+      val (thisLink, subToShuffle) = toShuffle.splitAt(linkSize)
+      val (subStable, unstable) = Random.shuffle(thisLink).splitAt(Math.ceil(linkSize / 2d).toInt)
+      if (subToShuffle.isEmpty) {
+        stable ++ subStable ++ unstable
+      } else {
+        chainOn(unstable ++ subToShuffle, linkSize, stable ++ subStable)
+      }
+    }
+    val linkSize = Math.ceil(all.size / 3d).toInt
+    val chainedForward = chainOn(all, linkSize)
+    val chainedBackward = chainOn(chainedForward.reverse, linkSize)
+    chainedBackward.reverse
+  }
+
+  def pool(size: Int): Set[Card] = {
+    val integers = 0 until randomFactorSizes.product
+    chainShuffle(integers.toVector).take(size).map(from).toSet
   }
 
   def sort(deck: Set[Card]): Vector[Card] = {

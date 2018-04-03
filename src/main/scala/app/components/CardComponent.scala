@@ -30,16 +30,16 @@ object CardComponent {
     def render(p: Props, s: Boolean): VdomNode = {
       val baseStyle = if ((p.selectable && !s) || p.desaturate) app.Styles.appCardUnselected else app.Styles.appCard
       val fullStyle =
-        if (p.card.profession.contains(Alchemists)) {
-          baseStyle + app.Styles.appAlchemists
-        } else if (p.card.profession.contains(BattleTechs)) {
-          baseStyle + app.Styles.appBattleTechs
-        } else if (p.card.profession.contains(Conjurors)) {
-          baseStyle + app.Styles.appConjurors
-        } else if (p.card.profession.contains(Prophets)) {
-          baseStyle + app.Styles.appProphets
-        } else if (p.card.profession.contains(Woodsmen)) {
-          baseStyle + app.Styles.appWoodsmen
+        if (p.card.profession.contains(Alchemist)) {
+          baseStyle + app.Styles.appAlchemist
+        } else if (p.card.profession.contains(BattleTech)) {
+          baseStyle + app.Styles.appBattleTech
+        } else if (p.card.profession.contains(Conjuror)) {
+          baseStyle + app.Styles.appConjuror
+        } else if (p.card.profession.contains(Prophet)) {
+          baseStyle + app.Styles.appProphet
+        } else if (p.card.profession.contains(Woodsman)) {
+          baseStyle + app.Styles.appWoodsman
         } else {
           baseStyle
         }

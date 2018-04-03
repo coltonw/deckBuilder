@@ -42,27 +42,27 @@ object Styles extends StyleSheet.Inline {
     opacity(0.6)
   )
 
-  val appAlchemists = style(
+  val appAlchemist = style(
     borderColor.yellow,
     backgroundColor.lightyellow
   )
 
-  val appBattleTechs = style(
+  val appBattleTech = style(
     borderColor.steelblue,
     backgroundColor.lightsteelblue
   )
 
-  val appConjurors = style(
+  val appConjuror = style(
     borderColor.purple,
     backgroundColor.lavender
   )
 
-  val appProphets = style(
+  val appProphet = style(
     borderColor.red,
     backgroundColor.pink
   )
 
-  val appWoodsmen = style(
+  val appWoodsman = style(
     borderColor.green,
     backgroundColor.lightgreen
   )
